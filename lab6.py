@@ -8,6 +8,11 @@ class Board:
     @staticmethod
     def getNewLocation(currentLocation):
         newLocation = Board.spin() + currentLocation
+        
+        if newLocation > 100:
+            print(f"Over 100! Staying on space {currentLocation}")
+            return currentLocation
+        
         if newLocation == 1:
             print("Ladder to 38")
             return 38
@@ -66,14 +71,10 @@ class Board:
             print("Chute to 78")
             return 78
         
-        if newLocation > 100:
-            return currentLocation
         return newLocation
     
 class Player:
-    name = ""
-    space = 0
-    def setName(self, name):
+    def __init__(self, name):
         self.name = name
         self.space = 0
 
@@ -83,11 +84,28 @@ class Player:
     def getSpace(self):
         return self.space
     
-    def hasWon():
-        return Player.getSpace == 100
+    def setSpace(self, space):
+        self.space = space
+    
+    def hasWon(self):
+        return self.getSpace() == 100
     
     def __str__(self):
         return f"{self.name} is on space {self.space}"
     
 def main():
+    players = [Player("Jiening"), Player("Sofia")]
+    game_over = False
     
+    while not game_over:
+        for player in players:
+            input(f"\n[{player.getName()}'s turn] Press Enter to spin...")
+            new_space = Board.getNewLocation(player.getSpace())
+            player.setSpace(new_space)
+            print(player)
+            if player.hasWon():
+                print(f"\n {player.getName()} wins the game!")
+                game_over = True
+                break
+    if __name__ == "__main__":
+        main()
