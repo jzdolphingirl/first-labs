@@ -7,7 +7,9 @@ class Board:
     
     @staticmethod
     def getNewLocation(currentLocation):
-        newLocation = Board.spin() + currentLocation
+        spin_value = Board.spin()
+        newLocation =  spin_value + currentLocation
+        print(f"Rolled a {spin_value}. Moving to {newLocation}")
         
         if newLocation > 100:
             print(f"Over 100! Staying on space {currentLocation}")
@@ -99,13 +101,13 @@ def main():
     
     while not game_over:
         for player in players:
-            input(f"\n[{player.getName()}'s turn] Press Enter to spin...")
+            input(f"\n{player.getName()}'s turn! Press Enter to spin...")
             new_space = Board.getNewLocation(player.getSpace())
             player.setSpace(new_space)
             print(player)
             if player.hasWon():
-                print(f"\n {player.getName()} wins the game!")
+                print(f"\n{player.getName()} wins the game!")
                 game_over = True
                 break
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()
