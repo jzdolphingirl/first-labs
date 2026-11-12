@@ -340,4 +340,3 @@ if __name__ == "__main__":
             print("Congratulations!!! YOU WIN")
             over = True
             continue
-    clear() 
