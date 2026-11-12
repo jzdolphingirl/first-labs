@@ -44,27 +44,24 @@ def print_mines_layout():
  
     print()
   
-def set_mines():
- 
+def set_mines(first_r, first_col):
     global numbers
     global mines_no
     global n
- 
-    #number of mines already set up
-    count = 0
-    while count < mines_no:
- 
-        # Random number from all possible grid positions 
-        val = random.randint(0, n*n-1)
- 
-        #row and column from the number
-        r = val // n
-        col = val % n
- 
-        #has mine = -1
-        if numbers[r][col] != -1:
-            count = count + 1
-            numbers[r][col] = -1
+
+    # Keep the first clicked cell and its neighbors mine-free.
+    available_cells = [
+        (r, col)
+        for r in range(n)
+        for col in range(n)
+        if max(abs(r - first_r), abs(col - first_col)) > 1
+    ]
+
+    if mines_no > len(available_cells):
+        raise ValueError("Too many mines for the board and protected first-click area.")
+
+    for r, col in random.sample(available_cells, mines_no):
+        numbers[r][col] = -1
  
 # Function for setting up the other grid values
 def set_values():
@@ -205,18 +202,15 @@ if __name__ == "__main__":
     # The positions that have been flagged
     flags = []
  
-    # Set the mines
-    set_mines()
- 
-    # Set the values
-    set_values()
- 
+    # Do not place mines yet; wait until the first cell is opened.
+    first_move = True
+
     # Display the instructions
     instructions()
- 
-    # Variable for maintaining Game Loop
+
+    #   Variable for maintaining Game Loop
     over = False
-         
+     
     # The GAME LOOP 
     while not over:
         print_mines_layout()
@@ -263,6 +257,11 @@ if __name__ == "__main__":
             # Get row and column numbers
             r = val[0]-1
             col = val[1]-1 
+
+            if first_move:
+                set_mines(r, col)
+                set_values()
+                first_move = False
  
             # If cell already been flagged
             if [r, col] in flags:
