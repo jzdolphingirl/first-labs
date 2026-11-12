@@ -33,7 +33,10 @@ def print_mines_layout():
         #edge number + mine value 
         st = "  " + str(r + 1) + "  "
         for col in range(n):
-            st = st + "|  " + str(mine_values[r][col]) + "  "
+            value = mine_values[r][col]
+            if value == 0 or value == '0':
+                value = ' '
+            st = st + "|  " + str(value) + "  "
         print(st + "|") 
 
         #side + bottom
