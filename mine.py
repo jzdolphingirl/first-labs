@@ -30,13 +30,12 @@ def print_mines_layout():
             st = st + "|     "
         print(st + "|")
 
-        #edge number + mine value 
+        #edge number + mine value; render all zero representations as blank
         st = "  " + str(r + 1) + "  "
         for col in range(n):
             value = mine_values[r][col]
-            if value == 0 or value == '0':
-                value = ' '
-            st = st + "|  " + str(value) + "  "
+            shown = " " if str(value).strip() == "0" else str(value)
+            st = st + "|  " + shown + "  "
         print(st + "|") 
 
         #side + bottom
@@ -121,7 +120,7 @@ def neighbours(r, col):
     global mine_values
     global numbers
     global vis
- 
+
     # If the cell already not visited
     if [r,col] not in vis:
  
@@ -131,8 +130,8 @@ def neighbours(r, col):
         # If the cell is zero-valued
         if numbers[r][col] == 0:
  
-            # Display it to the user
-            mine_values[r][col] = numbers[r][col]
+            # Keep zero numeric internally; print_mines_layout renders it blank
+            mine_values[r][col] = 0
  
             # Recursive calls for the neighbouring cells
             if r > 0:
@@ -327,7 +326,7 @@ if __name__ == "__main__":
 
         elif numbers[r][col] == 0:
             vis = []
-            mine_values[r][col] = '0'
+            mine_values[r][col] = 0
             neighbours(r, col)
 
         else:
@@ -340,3 +339,4 @@ if __name__ == "__main__":
             print("Congratulations!!! YOU WIN")
             over = True
             continue
+    clear() 
