@@ -49,19 +49,29 @@ def set_mines(first_r, first_col):
     global mines_no
     global n
 
-    # Keep the first clicked cell and its neighbors mine-free.
-    available_cells = [
-        (r, col)
+    # Clear any previous board state before placing mines
+    numbers = [[0 for _ in range(n)] for _ in range(n)]
+
+    # Protect the first clicked cell and the full 3x3 area around it
+    blocked = {
+        (r, c)
         for r in range(n)
-        for col in range(n)
-        if max(abs(r - first_r), abs(col - first_col)) > 1
+        for c in range(n)
+        if abs(r - first_r) <= 1 and abs(c - first_col) <= 1
+    }
+
+    available = [
+        (r, c)
+        for r in range(n)
+        for c in range(n)
+        if (r, c) not in blocked
     ]
 
-    if mines_no > len(available_cells):
-        raise ValueError("Too many mines for the board and protected first-click area.")
+    if mines_no > len(available):
+        raise ValueError("Too many mines for the board and safe opening area.")
 
-    for r, col in random.sample(available_cells, mines_no):
-        numbers[r][col] = -1
+    for r, c in random.sample(available, mines_no):
+        numbers[r][c] = -1
  
 # Function for setting up the other grid values
 def set_values():
@@ -230,15 +240,13 @@ if __name__ == "__main__":
                 instructions()
                 continue
  
-        # Flag input
         elif len(inp) == 3:
             if inp[2] != 'F' and inp[2] != 'f':
                 clear()
                 print("Wrong Input!")
                 instructions()
                 continue
- 
-            # Try block to handle errant input  
+
             try:
                 val = list(map(int, inp[:2]))
             except ValueError:
@@ -246,44 +254,31 @@ if __name__ == "__main__":
                 print("Wrong input!")
                 instructions()
                 continue
- 
-            # Sanity checks 
+
             if val[0] > n or val[0] < 1 or val[1] > n or val[1] < 1:
                 clear()
                 print("Wrong input!")
                 instructions()
                 continue
- 
-            # Get row and column numbers
-            r = val[0]-1
-            col = val[1]-1 
 
-            if first_move:
-                set_mines(r, col)
-                set_values()
-                first_move = False
- 
-            # If cell already been flagged
+            r = val[0]-1
+            col = val[1]-1
+
+            # Do not place mines when flagging
             if [r, col] in flags:
                 clear()
                 print("Flag already set")
                 continue
- 
-            # If cell already been displayed
+
             if mine_values[r][col] != ' ':
                 clear()
                 print("Value already known")
                 continue
- 
-            # Check the number for flags    
+
             if len(flags) < mines_no:
                 clear()
                 print("Flag set")
- 
-                # Adding flag to the list
                 flags.append([r, col])
-                 
-                # Set the flag for display
                 mine_values[r][col] = 'F'
                 continue
             else:
@@ -308,12 +303,17 @@ if __name__ == "__main__":
         # Get row and column number
         r = val[0]-1
         col = val[1]-1
- 
+
+        if first_move:
+            set_mines(r, col)
+            set_values()
+            first_move = False
+
         # Unflag the cell if already flagged
         if [r, col] in flags:
             flags.remove([r, col])
- 
-        # If landing on a mine --- GAME OVER    
+
+        # If landing on a mine --- GAME OVER
         if numbers[r][col] == -1:
             mine_values[r][col] = 'M'
             show_mines()
@@ -321,15 +321,13 @@ if __name__ == "__main__":
             print("Landed on a mine. GAME OVER!!!!!")
             over = True
             continue
- 
-        # If landing on a cell with 0 mines in neighboring cells
+
         elif numbers[r][col] == 0:
             vis = []
             mine_values[r][col] = '0'
             neighbours(r, col)
- 
-        # If selecting a cell with atleast 1 mine in neighboring cells  
-        else:   
+
+        else:
             mine_values[r][col] = numbers[r][col]
  
         # Check for game completion 
