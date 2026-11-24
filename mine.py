@@ -30,11 +30,11 @@ def print_mines_layout():
             st = st + "|     "
         print(st + "|")
 
-        #edge number + mine value; render all zero representations as blank
+        #edge number + mine value
         st = "  " + str(r + 1) + "  "
         for col in range(n):
             value = mine_values[r][col]
-            shown = " " if str(value).strip() == "0" else str(value)
+            shown = " " if str(value).strip() == "0" else str(value) #really cool!
             st = st + "|  " + shown + "  "
         print(st + "|") 
 
@@ -51,10 +51,10 @@ def set_mines(first_r, first_col):
     global mines_no
     global n
 
-    # Clear any previous board state before placing mines
+    # clear prev board
     numbers = [[0 for _ in range(n)] for _ in range(n)]
 
-    # Protect the first clicked cell and the full 3x3 area around it
+    # protect first click, very interesting
     blocked = {
         (r, c)
         for r in range(n)
@@ -75,17 +75,17 @@ def set_mines(first_r, first_col):
     for r, c in random.sample(available, mines_no):
         numbers[r][c] = -1
  
-# Function for setting up the other grid values
+# set up other values
 def set_values():
  
     global numbers
     global n
  
-    # Loop for counting each cell value
+    # counting each cell value
     for r in range(n):
         for col in range(n):
  
-            # Skip, if it contains a mine
+            # skip if contains a mine
             if numbers[r][col] == -1:
                 continue
  
@@ -155,7 +155,7 @@ def neighbours(r, col):
         if numbers[r][col] != 0:
             mine_values[r][col] = numbers[r][col]
  
-# Function for clearing the terminal
+# clearing the terminal
 def clear():
     os.system("clear")      
  
@@ -207,33 +207,28 @@ if __name__ == "__main__":
     # Number of mines
     mines_no = 8
  
-    # The actual values of the grid
+    # actual values of the grid
     numbers = [[0 for y in range(n)] for x in range(n)] 
-    # The apparent values of the grid
+    # apparent values of the grid
     mine_values = [[' ' for y in range(n)] for x in range(n)]
-    # The positions that have been flagged
+    # positions that have been flagged
     flags = []
  
-    # Do not place mines yet; wait until the first cell is opened.
     first_move = True
 
-    # Display the instructions
     instructions()
 
-    #   Variable for maintaining Game Loop
     over = False
      
-    # The GAME LOOP 
+    # GAME LOOP 
     while not over:
         print_mines_layout()
  
-        # Input from the user
         inp = input("Enter row number followed by space and column number = ").split()
          
         # Standard input
         if len(inp) == 2:
  
-            # Try block to handle errant input
             try: 
                 val = list(map(int, inp))
             except ValueError:
@@ -266,7 +261,6 @@ if __name__ == "__main__":
             r = val[0]-1
             col = val[1]-1
 
-            # Do not place mines when flagging
             if [r, col] in flags:
                 clear()
                 print("Flag already set")
@@ -295,7 +289,6 @@ if __name__ == "__main__":
             continue
              
  
-        # Sanity checks
         if val[0] > n or val[0] < 1 or val[1] > n or val[1] < 1:
             clear()
             print("Wrong Input!")
@@ -315,12 +308,11 @@ if __name__ == "__main__":
         if [r, col] in flags:
             flags.remove([r, col])
 
-        # If landing on a mine --- GAME OVER
         if numbers[r][col] == -1:
             mine_values[r][col] = 'M'
             show_mines()
             print_mines_layout()
-            print("Landed on a mine. GAME OVER!!!!!")
+            print("Landed on a mine. GAME OVER!!")
             over = True
             continue
 
@@ -332,11 +324,10 @@ if __name__ == "__main__":
         else:
             mine_values[r][col] = numbers[r][col]
  
-        # Check for game completion 
         if(check_over()):
             show_mines()
             print_mines_layout()
-            print("Congratulations!!! YOU WIN")
+            print("Congratulations! YOU WIN")
             over = True
             continue
     clear() 
